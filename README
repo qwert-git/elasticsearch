@@ -1,0 +1,57 @@
+PUT http://localhost:9200/words.completion
+{
+  "settings": {
+    "number_of_shards": 3,
+    "number_of_replicas": 2
+  },
+  "mappings": {
+    "properties": {
+      "Word": { "type": "completion" },
+      "CreatedAt": { "type": "date" }
+    }
+  }
+}
+
+
+
+GET words.completion/_search
+{
+  "suggest": {
+      "_doc": {
+          "prefix": "posibelity",
+          "completion": {
+              "field": "Word",
+              "size": 3,
+              "fuzzy": {
+                  "fuzziness": 2
+              }
+          }
+      }
+  }
+}
+
+
+Response:
+{
+  "suggest": {
+      "_doc": [
+          {
+              "text": "posibelity",
+              "offset": 0,
+              "length": 10,
+              "options": [
+                  {
+                      "text": "possibility",
+                      "_index": "words.completion",
+                      "_id": "58-KjoMB3ApsMhsEIO8e",
+                      "_score": 3.0,
+                      "_source": {
+                          "Word": "possibility",
+                          "CreatedAt": "2022-09-30T17:16:00.3852261+04:00"
+                      }
+                  }
+              ]
+          }
+      ]
+  }
+}
